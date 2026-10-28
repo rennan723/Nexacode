@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<title>Nexacode · várias IAs grátis em um só chat</title>
+<meta name="description" content="Use várias IAs gratuitas no mesmo prompt: o Nexacode troca de modelo quando a cota acaba e junta o melhor de cada resposta.">
+<style>
+:root{color-scheme:dark light;--bg:#0b0d12;--s1:#12151c;--s2:#1b1f29;--sep:#262b36;--tx:#e8ecf3;--dim:#8b93a3;--ac:#3b82f6;--ub:#2f6fe4;--ok:#30d158;--er:#ff453a;--code:#0a0c10}
+@media(prefers-color-scheme:light){:root{--bg:#f2f3f7;--s1:#fff;--s2:#eceef3;--sep:#dcdfe6;--tx:#14171f;--dim:#6b7280;--ac:#1d6fe8;--ub:#1d6fe8;--ok:#1f9d46;--er:#d92d20;--code:#f3f4f7}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button,select,textarea,input{font:inherit;font-size:16px;color:inherit}
+.px{border-radius:14px}
+#app{display:grid;grid-template-rows:auto 1fr;height:100%;max-width:1100px;margin:auto}
+header{display:flex;gap:8px;align-items:center;padding:10px 14px}
+.logo{font-weight:600;font-size:18px;margin-right:auto}
+.btn{background:var(--s2);border:0;padding:7px 14px;cursor:pointer;transition:filter .15s}
+.btn.px,select.px{border-radius:999px}
+.btn:hover{filter:brightness(1.12)}
+.btn:focus-visible,select:focus-visible,#t:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.btn.pri{background:var(--ac);color:#fff;font-weight:600}
+select{background:var(--s2);border:0;padding:7px 10px;max-width:140px;font-size:14px}
+.wrap{display:grid;grid-template-columns:240px 1fr;min-height:0;gap:12px;padding:0 14px 12px}
+#side{background:var(--s1);padding:12px;overflow:auto;display:flex;flex-direction:column;gap:8px;border-radius:18px}
+#list{display:flex;flex-direction:column;gap:2px}
+.cv{padding:8px 10px;cursor:pointer;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:10px}
+.cv:hover{background:var(--s2)}.cv.on{background:var(--s2);font-weight:600}
+main.px{background:var(--s1);border-radius:18px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+#msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:min(720px,86%);padding:9px 14px;overflow-wrap:anywhere;border-radius:18px}
+.m.u{align-self:flex-end;background:var(--ub);color:#fff;border-bottom-right-radius:6px}
+.m.a{align-self:flex-start;background:var(--s2);border-bottom-left-radius:6px}
+.m p,.m ul,.m h4{margin:.35em 0}.m h4{font-size:15px}
+.m pre{background:var(--code);padding:10px 12px;overflow:auto;border-radius:10px}
+.m code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:var(--ac);background:var(--code);padding:1px 5px;border-radius:5px}
+.m pre code{background:none;padding:0;color:inherit}
+.meta{font-size:12px;color:var(--dim);margin-top:6px}
+#st{padding:0 18px;min-height:22px;font-size:13px;color:var(--dim)}
+.bar{display:flex;gap:8px;align-items:flex-end;padding:8px 12px 12px}
+#t{flex:1;resize:none;background:var(--s2);border:0;padding:10px 16px;max-height:140px;border-radius:20px}
+#go{width:40px;height:40px;padding:0;border-radius:50%;font-size:20px;flex:none}
+.hi{margin:auto;max-width:460px;width:100%}.hi h2{margin:0 0 2px;font-size:26px}.sub{color:var(--dim);margin:0 0 14px}
+.grp{background:var(--s2);border-radius:14px;overflow:hidden}.grp div{padding:11px 14px;border-top:1px solid var(--sep)}.grp div:first-child{border:0}
+.grp b{display:block}.grp span{color:var(--dim);font-size:13px}
+.ad{min-height:0;text-align:center;overflow:hidden}
+dialog.px{background:var(--s1);color:var(--tx);border:0;padding:18px;width:min(560px,94vw);max-height:90vh;border-radius:20px}
+dialog::backdrop{background:#0008;backdrop-filter:blur(4px)}
+.pv{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sep)}
+.pv b{width:92px}.pv span{color:var(--dim);font-size:13px;flex:1;min-width:120px}
+.pv input{background:var(--s2);border:0;border-radius:10px;padding:8px 10px;flex:1;min-width:140px}
+.ok{color:var(--ok)}.er{color:var(--er)}.sm{font-size:13px;color:var(--dim)}
+a{color:var(--ac)}
+#bm{display:none}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}#bm{display:block}
+#side{position:fixed;inset:56px 14px auto 14px;z-index:5;max-height:70vh;display:none;box-shadow:0 12px 40px #0006}#side.open{display:flex}}
+@media(prefers-reduced-motion:no-preference){.m{animation:in .18s}@keyframes in{from{opacity:0;transform:translateY(4px)}}}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+ <button class="btn px" id="bm" aria-label="Conversas">☰</button>
+ <span class="logo">Nexacode</span>
+ <select id="mode" class="px" aria-label="Modo">
+  <option value="inteligente">Inteligente</option><option value="economia">Economia</option>
+  <option value="fusao">Fusão</option><option value="critica">Crítica</option><option value="corrida">Corrida</option>
+ </select>
+ <button class="btn px" id="bs">⚙ IAs</button>
+</header>
+<div class="wrap">
+ <aside id="side" class="px">
+  <button class="btn pri px" id="nw">+ Nova conversa</button>
+  <div id="list"></div>
+  <button class="btn px" id="ex">Exportar (.md)</button>
+  <div class="sm" style="display:flex;gap:12px"><a href="#" id="lp">Privacidade</a><a href="#" id="lt">Termos</a><a href="#" id="lc">Contato</a></div>
+  <div class="ad" id="ad1" hidden></div>
+ </aside>
+ <main class="px">
+  <div id="msgs"></div><div id="st"></div>
+  <div class="bar"><textarea id="t" rows="1" placeholder="Escreva sua mensagem…" class="px"></textarea>
+  <button class="btn pri px" id="go">↑</button></div>
+ </main>
+</div>
+</div>
+
+<dialog id="dlg" class="px">
+ <h3 style="margin-top:0">Suas IAs grátis</h3>
+ <p class="sm">Crie uma chave grátis em cada site, cole aqui e toque em salvar. Use 2 ou mais para ativar fusão, crítica e corrida. As chaves ficam <b>só neste navegador</b> e vão direto para o provedor.</p>
+ <div id="pvs"></div>
+ <p class="sm"><b>Modos:</b> Economia usa 1 IA e troca sozinha se a cota acabar. Fusão: 2 IAs respondem e uma terceira junta o melhor. Crítica: uma escreve, outra melhora. Corrida: vale a mais rápida. Inteligente escolhe pelo pedido.</p>
+ <p class="sm"><b>Privacidade:</b> não há login nem servidor guardando conversas; tudo fica salvo no seu aparelho. Suas mensagens são enviadas aos provedores que você ativar. Este site pode exibir anúncios.</p>
+ <button class="btn px" id="cl">Fechar</button>
+</dialog>
+
+<dialog id="dl" class="px"><h3 id="dlh" style="margin-top:0"></h3><div id="dlb" class="sm" style="font-size:14px;color:var(--tx)"></div><br><button class="btn px" id="dlc">Fechar</button></dialog>
+
+<script>
+"use strict";
+// Anúncios: preencha só quando o Google AdSense aprovar seu site (client "ca-pub-..." e slot numérico).
+const ADS={client:"",slot:""};
+const P={
+ groq:{u:"https://api.groq.com/openai/v1",s:"console.groq.com/keys",p:["llama-3.3-70b","llama-3","qwen"]},
+ gemini:{u:"https://generativelanguage.googleapis.com/v1beta/openai",s:"aistudio.google.com/apikey",p:["flash"]},
+ openrouter:{u:"https://openrouter.ai/api/v1",s:"openrouter.ai/keys",p:[":free"]},
+ cerebras:{u:"https://api.cerebras.ai/v1",s:"cloud.cerebras.ai",p:["llama-3.3","qwen","llama"]},
+ mistral:{u:"https://api.mistral.ai/v1",s:"console.mistral.ai/api-keys",p:["mistral-small","mistral-nemo","mistral-large"]}};
+const AVOID=/vision|guard|whisper|tts|embed|image|audio|moderation|ocr/i;
+const $=s=>document.querySelector(s);
+const ls={g:(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch{return d}},s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+let cfg=ls.g("nx_cfg",{keys:{},models:{},mode:"inteligente"}),use=ls.g("nx_use",{}),convs=ls.g("nx_cv",[]),cur=null,ctrl=null,busy=false;
+const save=()=>{ls.s("nx_cfg",cfg);ls.s("nx_use",use);ls.s("nx_cv",convs.slice(0,30))};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const inl=s=>s.replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+const li=l=>/^\s*([-*]|\d+\.)\s/.test(l);
+function md(s){return s.split("```").map((p,i)=>{
+ if(i%2){const n=p.indexOf("\n");return "<pre><code>"+esc(n<0?p:p.slice(n+1))+"</code></pre>"}
+ return esc(p).split(/\n{2,}/).filter(b=>b.trim()).map(b=>{const ls_=b.split("\n").filter(l=>l.trim());
+  if(ls_.every(li))return "<ul>"+ls_.map(l=>"<li>"+inl(l.replace(/^\s*([-*]|\d+\.)\s/,""))+"</li>").join("")+"</ul>";
+  const h=b.match(/^#{1,6}\s*(.*)$/);if(h&&ls_.length==1)return "<h4>"+inl(h[1])+"</h4>";
+  return "<p>"+inl(b).replace(/\n/g,"<br>")+"</p>"}).join("")}).join("")}
+const clean=t=>t.replace(/<think>[\s\S]*?(<\/think>|$)/gi,"").trim();
+const today=()=>new Date().toISOString().slice(0,10);
+
+// ---------- provedores, cotas e chamadas ----------
+function avail(){const now=Date.now();return Object.keys(cfg.keys).filter(p=>P[p]&&!((use[p]||{}).until>now))
+ .sort((a,b)=>cnt(a)-cnt(b))}
+const cnt=p=>(use[p]&&use[p].day===today())?use[p].n:0;
+function cool(p,s){(use[p]=use[p]||{}).until=Date.now()+s*1000;save()}
+async function call(p,msgs,o={}){
+ let r;
+ try{r=await fetch(P[p].u+"/chat/completions",{method:"POST",signal:o.signal,
+  headers:{"Content-Type":"application/json",Authorization:"Bearer "+cfg.keys[p]},
+  body:JSON.stringify({model:cfg.models[p]||"",messages:msgs,max_tokens:o.max||1000,temperature:o.temp??0.7,stream:!!o.onTok})})}
+ catch(e){if(e.name==="AbortError")throw e;cool(p,30);throw new Error(p+": sem conexão ou bloqueado pelo navegador")}
+ if(!r.ok){const ra=parseInt(r.headers.get("Retry-After")||"60",10)||60;
+  if(r.status===429||r.status===503)cool(p,Math.min(Math.max(ra,30),3600));else if(r.status===401||r.status===403)cool(p,3600);
+  throw new Error(p+": erro "+r.status+(r.status===401?" (chave inválida)":r.status===429?" (cota)":""))}
+ let txt="";
+ if(o.onTok){const rd=r.body.getReader(),dec=new TextDecoder();let buf="";
+  for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});
+   const ls_=buf.split("\n");buf=ls_.pop();
+   for(const l of ls_){if(!l.startsWith("data: ")||l.includes("[DONE]"))continue;
+    try{const d=JSON.parse(l.slice(6)).choices[0].delta.content;if(d){txt+=d;o.onTok(clean(txt))}}catch{}}}}
+ else{const d=await r.json();txt=(d.choices&&d.choices[0].message.content)||""}
+ txt=clean(txt);if(!txt)throw new Error(p+": resposta vazia");
+ const u=use[p]=use[p]||{};if(u.day!==today()){u.day=today();u.n=0}u.n++;save();return txt}
+const last=m=>[...m].reverse().find(x=>x.role==="user").content;
+async function um(m,o){const er=[];for(const p of avail()){try{return[await call(p,m,o),[p]]}catch(e){if(e.name==="AbortError")throw e;er.push(e.message)}}
+ throw new Error(er.length?"Nenhuma IA respondeu agora: "+er.join(" | "):"Nenhuma IA disponível. Toque em ⚙ IAs e adicione uma chave.")}
+async function par(ps,m,o){const r={};await Promise.all(ps.map(async p=>{try{r[p]=await call(p,m,o)}catch(e){if(e.name==="AbortError")throw e;r[p]=null}}));return r}
+async function fusao(m,o,st){const d=avail();if(d.length<2)return um(m,o);
+ st("Consultando "+d.slice(0,2).join(" + ")+"…");const r=await par(d.slice(0,2),m,{signal:o.signal});
+ const ok=Object.entries(r).filter(e=>e[1]);if(ok.length<2)return ok.length?[ok[0][1],[ok[0][0]]]:um(m,o);
+ const[[pa,ta],[pb,tb]]=ok,j=avail().find(p=>p!==pa&&p!==pb)||pa;st("Juntando o melhor com "+j+"…");
+ const jm=[{role:"system",content:"Você é o editor final. Recebe duas respostas para a mesma pergunta. Escreva UMA resposta final em português do Brasil: mantenha o que as duas dizem em comum, corrija o que uma errou quando for claro, aproveite o melhor de cada. Não mencione resposta A ou B nem comente o processo."},
+  {role:"user",content:"PERGUNTA:\n"+last(m)+"\n\nRESPOSTA A:\n"+ta+"\n\nRESPOSTA B:\n"+tb}];
+ try{return[await call(j,jm,o),[pa,pb,j]]}catch(e){if(e.name==="AbortError")throw e;return[ta,[pa,pb]]}}
+async function critica(m,o,st){const d=avail();if(d.length<2)return um(m,o);
+ st("Rascunho com "+d[0]+"…");let ra;try{ra=await call(d[0],m,{signal:o.signal,temp:0.9})}catch(e){if(e.name==="AbortError")throw e;return um(m,o)}
+ st("Melhorando com "+d[1]+"…");
+ const jm=[{role:"system",content:"Você é um editor criativo exigente. Leia o rascunho, ache o que está fraco (clichês, ritmo, clareza) e entregue SOMENTE a versão final melhorada, em português do Brasil, sem comentar as mudanças."},
+  {role:"user",content:"PEDIDO:\n"+last(m)+"\n\nRASCUNHO:\n"+ra}];
+ try{return[await call(d[1],jm,{...o,temp:0.8}),[d[0],d[1]]]}catch(e){if(e.name==="AbortError")throw e;return[ra,[d[0]]]}}
+async function corrida(m,o,st){const d=avail().slice(0,3);if(d.length<2)return um(m,o);
+ st("Corrida entre "+d.join(", ")+"…");const c=new AbortController();o.signal&&o.signal.addEventListener("abort",()=>c.abort());
+ try{const w=await Promise.any(d.map(async p=>[await call(p,m,{signal:c.signal}),[p]]));c.abort();return w}
+ catch(e){if(o.signal&&o.signal.aborted)throw new DOMException("","AbortError");return um(m,o)}}
+const CRI=/escreva|história|historia|poema|roteiro|slogan|ideia|crie|conto|letra|legenda|nome para/i,PRO=/analise|compare|explique|código|codigo|plano|resuma|revise|por que|estratégia|estrategia|vantagens/i;
+const pick=t=>t.length<60&&!CRI.test(t)&&!PRO.test(t)?"economia":CRI.test(t)?"critica":(t.length>90||PRO.test(t))?"fusao":"economia";
+async function ask(text,hist,mode,st,onTok,signal){
+ const real=mode==="inteligente"?pick(text):mode;
+ const m=[{role:"system",content:"Responda em português do Brasil, de forma direta e correta. Se não souber, diga que não sabe."},
+  ...hist.slice(-8).map(x=>({role:x.r==="u"?"user":"assistant",content:x.t.slice(0,1200)})),{role:"user",content:text}];
+ const o={signal,onTok};const f={economia:(m,o)=>(st("Consultando "+(avail()[0]||"…")+"…"),um(m,o)),fusao,critica,corrida}[real];
+ const[t,used]=await f(m,o,st);return{t,used,real}}
+
+// ---------- adicionar chaves ----------
+const detect=k=>k.startsWith("gsk_")?"groq":k.startsWith("AIza")?"gemini":k.startsWith("sk-or-")?"openrouter":k.startsWith("csk-")?"cerebras":null;
+async function addKey(p,k){
+ if(k.length<15)return"Chave muito curta.";
+ try{const r=await fetch(P[p].u+"/models",{headers:{Authorization:"Bearer "+k}});if(!r.ok)throw new Error("erro "+r.status);
+  const j=await r.json(),ids=(j.data||j).map(x=>(x.id||"").replace("models/","")).filter(x=>x&&!AVOID.test(x)).sort();
+  cfg.keys[p]=k;cfg.lists=cfg.lists||{};cfg.lists[p]=ids.slice(0,80);
+  cfg.models[p]=P[p].p.map(q=>ids.find(x=>x.toLowerCase().includes(q))).find(Boolean)||ids[0]||"";save();return""}
+ catch(e){return"Não validou ("+String(e.message).slice(0,40)+"). Confira a chave e a internet."}}
+function onb(){const n=Object.keys(cfg.keys).length;if(n>1)return"";
+ return '<p style="margin-top:12px"><b>'+(n?"Adicione mais uma IA para liberar Fusão, Crítica e Corrida":"Comece em 3 toques")+'</b></p><p class="sm">1) Toque numa IA, crie a chave grátis e copie. 2) Volte aqui. 3) Toque em Colar e adicionar. Dica: comece por Groq e Gemini.</p><div style="display:flex;flex-wrap:wrap;gap:8px">'
+  +Object.keys(P).filter(p=>!cfg.keys[p]).map(p=>'<a class="btn px" style="text-decoration:none" target="_blank" rel="noopener noreferrer" href="https://'+P[p].s+'">'+p+' ↗</a>').join("")
+  +'</div><div class="pv" style="border:0"><input id="qk" type="password" autocomplete="off" placeholder="ou cole a chave aqui"><button class="btn pri px" id="qb">Colar e adicionar</button><small class="sm" id="qm"></small></div>'}
+function bindQ(){const b=$("#qb");if(!b)return;const m=$("#qm"),i=$("#qk");
+ b.onclick=async()=>{let k=i.value.trim();
+  if(!k){try{k=(await navigator.clipboard.readText()).trim();i.value=k}catch{m.textContent="Cole a chave no campo e toque de novo.";return}}
+  const p=detect(k);if(!p){m.textContent="Não reconheci o provedor. Use ⚙ IAs e cole na linha certa.";return}
+  m.textContent="Validando "+p+"…";const er=await addKey(p,k);
+  if(er){m.innerHTML='<span class="er">'+esc(er)+"</span>";return}i.value="";render();st("✓ "+p+" adicionada.")}}
+
+// ---------- interface ----------
+const el=$("#msgs");
+function render(){el.innerHTML="";
+ if(!cur||!cur.msgs.length){el.innerHTML='<div class="hi"><h2>Nexacode</h2><p class="sub">Várias IAs gratuitas em um só chat.</p><div class="grp">'
+  +'<div><b>Nunca fica sem resposta</b><span>Se a cota de uma IA acaba, outra assume sozinha.</span></div>'
+  +'<div><b>Respostas combinadas</b><span>Fusão e Crítica unem duas ou mais IAs na mesma resposta.</span></div>'
+  +'<div><b>Privado</b><span>Chaves e conversas ficam só no seu aparelho.</span></div></div>'
+  +onb()+'</div>';bindQ();return}
+ for(const x of cur.msgs)bubble(x)
+ el.scrollTop=el.scrollHeight}
+function fin(d,x){d.innerHTML=md(x.t)+(x.meta?'<div class="meta">'+esc(x.meta)+' · <a href="#" class="cp">copiar</a></div>':"");const c=d.querySelector(".cp");if(c)c.onclick=e=>{e.preventDefault();try{navigator.clipboard.writeText(x.t);c.textContent="copiado"}catch{}}}
+function bubble(x){const d=document.createElement("div");d.className="m px "+x.r;fin(d,x);el.appendChild(d);return d}
+function list(){const l=$("#list");l.innerHTML="";convs.forEach(c=>{const d=document.createElement("div");d.className="cv"+(c===cur?" on":"");d.textContent=c.title;d.onclick=()=>{cur=c;render();list();$("#side").classList.remove("open")};l.appendChild(d)})}
+function newc(){cur={id:Date.now(),title:"Nova conversa",msgs:[]};convs.unshift(cur);render();list();$("#side").classList.remove("open")}
+const st=t=>{$("#st").textContent=t};
+async function send(){
+ if(busy){ctrl&&ctrl.abort();return}
+ const t=$("#t").value.trim();if(!t)return;if(!cur)newc();
+ if(!Object.keys(cfg.keys).length){st("Adicione uma IA em ⚙ IAs primeiro.");return}
+ $("#t").value="";cur.msgs.push({r:"u",t});if(cur.title==="Nova conversa")cur.title=t.slice(0,40);
+ if(el.querySelector(".hi"))el.innerHTML="";bubble({r:"u",t});list();
+ const box=bubble({r:"a",t:"…"}),t0=Date.now();busy=true;$("#go").textContent="■";ctrl=new AbortController();
+ try{const r=await ask(t,cur.msgs.slice(0,-1),cfg.mode,st,x=>{box.innerHTML=md(x);el.scrollTop=el.scrollHeight},ctrl.signal);
+  const meta=r.real+" · "+r.used.join(" + ")+" · "+Math.round((Date.now()-t0)/1000)+"s";
+  fin(box,{r:"a",t:r.t,meta});cur.msgs.push({r:"a",t:r.t,meta});cur.msgs=cur.msgs.slice(-40);st("")}
+ catch(e){if(e.name==="AbortError"){box.remove();cur.msgs.pop();$("#t").value=t;st("Cancelado.")}
+  else{box.innerHTML='<span class="er">'+esc(e.message)+"</span>";cur.msgs.pop();st("")}}
+ busy=false;$("#go").textContent="↑";save();el.scrollTop=el.scrollHeight}
+$("#go").onclick=send;
+$("#t").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&innerWidth>800){e.preventDefault();send()}});
+$("#t").addEventListener("input",e=>{e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,140)+"px"});
+$("#nw").onclick=newc;$("#bm").onclick=()=>$("#side").classList.toggle("open");
+$("#mode").value=cfg.mode;const HINT={inteligente:"Inteligente: escolhe o melhor modo para cada pedido.",economia:"Economia: 1 IA por vez, troca sozinha se a cota acabar.",fusao:"Fusão: 2 IAs respondem e uma terceira junta o melhor.",critica:"Crítica: uma IA escreve e outra melhora o texto.",corrida:"Corrida: várias IAs ao mesmo tempo, vale a mais rápida."};
+$("#mode").onchange=e=>{cfg.mode=e.target.value;save();st(HINT[cfg.mode])};
+$("#ex").onclick=()=>{if(!cur||!cur.msgs.length)return;const s="# "+cur.title+"\n\n"+cur.msgs.map(x=>(x.r==="u"?"## Você\n\n":"## Nexacode\n\n")+x.t).join("\n\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([s],{type:"text/markdown"}));a.download="nexacode-conversa.md";a.click();URL.revokeObjectURL(a.href)};
+
+// ---------- configuração das IAs ----------
+function pvs(){const w=$("#pvs");w.innerHTML="";
+ for(const p in P){const d=document.createElement("div");d.className="pv";const on=!!cfg.keys[p];
+  d.innerHTML='<b>'+p+'</b><span>'+(on?'<span class="ok">● ativa</span> · '+esc(cfg.models[p]||"")+" · "+cnt(p)+" usos hoje":'<a target="_blank" rel="noopener noreferrer" href="https://'+P[p].s+'">abrir a página da chave ↗</a>')+"</span>";
+  const i=document.createElement("input");i.type="password";i.autocomplete="off";i.placeholder=on?"nova chave (opcional)":"cole a chave aqui";
+  const b=document.createElement("button");b.className="btn px";b.textContent="Salvar";
+  const m=document.createElement("small");m.className="sm";
+  b.onclick=async()=>{const k=i.value.trim();if(k.length<15){m.textContent="Chave muito curta.";return}
+   m.textContent="Validando…";const er=await addKey(p,k);if(er){m.innerHTML='<span class="er">'+esc(er)+"</span>";return}pvs();render()};
+  d.append(i,b);if(on&&cfg.lists&&cfg.lists[p]){const sl=document.createElement("select");sl.className="px";sl.style.maxWidth="100%";
+   for(const id of cfg.lists[p]){const o=document.createElement("option");o.value=o.textContent=id;sl.appendChild(o)}sl.value=cfg.models[p];sl.onchange=()=>{cfg.models[p]=sl.value;save()};d.append(sl)}
+  if(on){const x=document.createElement("button");x.className="btn px";x.textContent="Remover";x.onclick=()=>{delete cfg.keys[p];delete cfg.models[p];save();pvs();render()};d.append(x)}
+  d.append(m);w.appendChild(d)}}
+$("#bs").onclick=()=>{pvs();$("#dlg").showModal()};$("#cl").onclick=()=>$("#dlg").close();
+
+const LEG={p:["Política de privacidade","<p>O Nexacode não tem login nem banco de dados: suas conversas, chaves e preferências ficam salvas apenas no seu navegador e você pode apagá-las limpando os dados do site.</p><p>Suas mensagens são enviadas diretamente aos provedores de IA que você ativar (Groq, Gemini, OpenRouter, Cerebras ou Mistral), que têm políticas próprias de uso e de dados. Não use dados sensíveis se não concordar com elas.</p><p>Quando os anúncios estiverem ativos, o Google AdSense pode usar cookies para exibi-los; veja a política do Google para saber como controlar isso.</p>"],
+ c:["Contato","<p>Dúvidas, sugestões ou problemas? Escreva para <a href=\"mailto:Rennansabinovitorino@gmail.com\">Rennansabinovitorino@gmail.com</a>.</p>"],
+ t:["Termos de uso","<p>O Nexacode é oferecido como está, sem garantia de disponibilidade. As respostas vêm de modelos de IA e podem conter erros: confira o que for importante.</p><p>Você é responsável pelas chaves que cadastra e por cumprir os termos de cada provedor, incluindo os limites do plano grátis. Não use o serviço para fins ilegais ou para prejudicar outras pessoas.</p><p>O código e a marca do Nexacode são protegidos: todos os direitos reservados. Estes termos podem mudar.</p>"]};
+for(const k of["p","t","c"])$("#l"+k).onclick=e=>{e.preventDefault();$("#dlh").textContent=LEG[k][0];$("#dlb").innerHTML=LEG[k][1];$("#dl").showModal()};
+$("#dlc").onclick=()=>$("#dl").close();
+
+// ---------- anúncios (só ativam com ADS preenchido) ----------
+if(ADS.client&&ADS.slot){const s=document.createElement("script");s.async=true;s.crossOrigin="anonymous";
+ s.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+encodeURIComponent(ADS.client);document.head.appendChild(s);
+ const a=$("#ad1");a.hidden=false;a.innerHTML='<ins class="adsbygoogle" style="display:block" data-ad-client="'+esc(ADS.client)+'" data-ad-slot="'+esc(ADS.slot)+'" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+ s.onload=()=>{try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch{}}}
+cur=convs[0]||null;render();list();
+</script>
+</body>
+</html>
